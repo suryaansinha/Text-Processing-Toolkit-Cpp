@@ -3,7 +3,6 @@
 #include <limits>
 #include <stack>
 #include <string>
-#include <utility>
 #include <vector>
 
 const std::size_t MAX_WORDS = 50;
@@ -12,8 +11,8 @@ const std::size_t MAX_WORDS = 50;
 Testing checklist summary:
 - Add several words, then search for both existing and missing words.
 - Sort mixed-case words and confirm the case-insensitive alphabetical order.
-- Reverse a stored mixed-case word and confirm the characters are reversed.
-- Count vowels in stored words containing uppercase vowels, lowercase vowels, and no vowels.
+- Reverse a directly entered mixed-case word and confirm the characters are reversed.
+- Count vowels in words containing uppercase vowels, lowercase vowels, and no vowels.
 - Calculate factorial for 0, 1, 5, and a negative number that should be rejected.
 - Enter letters for menu choices and factorial input to confirm validation works.
 - Run search, sort, reverse, vowel count, and display before storing words to confirm
@@ -158,31 +157,6 @@ void sortAndDisplayWords(std::vector<std::string>& words) {
     displayWords(words);
 }
 
-// Gets a valid 0-based index for a stored word selected by the user.
-bool chooseStoredWordIndex(const std::vector<std::string>& words, std::size_t& selectedIndex) {
-    if (words.empty()) {
-        std::cout << "No words stored yet. Add words before using this option.\n";
-        return false;
-    }
-
-    displayWords(words);
-    std::cout << "Enter the position number of the word to use: ";
-
-    int position = 0;
-    if (!readInteger(position)) {
-        std::cout << "Invalid input. Please enter a whole-number position.\n";
-        return false;
-    }
-
-    if (position < 1 || position > static_cast<int>(words.size())) {
-        std::cout << "Invalid position. Please choose a number from 1 to " << words.size() << ".\n";
-        return false;
-    }
-
-    selectedIndex = static_cast<std::size_t>(position - 1);
-    return true;
-}
-
 // Builds a reversed copy of a word by pushing and popping characters on a stack.
 std::string reverseWithStack(const std::string& word) {
     std::stack<char> characters;
@@ -200,15 +174,18 @@ std::string reverseWithStack(const std::string& word) {
     return reversed;
 }
 
-// Reverses a stored word selected by position to reuse the toolkit word list.
-void reverseStoredWord(const std::vector<std::string>& words) {
-    std::size_t selectedIndex = 0;
-    if (!chooseStoredWordIndex(words, selectedIndex)) {
+// Lets the user type a new word directly; stored words are not required for this feature.
+void reverseWord() {
+    std::string word;
+    std::cout << "Enter a word to reverse: ";
+    std::getline(std::cin, word);
+
+    if (word.empty()) {
+        std::cout << "No word entered.\n";
         return;
     }
 
-    std::cout << "Original word: " << words[selectedIndex] << '\n';
-    std::cout << "Reversed word: " << reverseWithStack(words[selectedIndex]) << '\n';
+    std::cout << "Reversed word: " << reverseWithStack(word) << '\n';
 }
 
 // Counts uppercase and lowercase English vowels in a word.
@@ -225,15 +202,18 @@ int countVowels(const std::string& word) {
     return vowelCount;
 }
 
-// Counts vowels in a stored word selected by position, matching the reverse option.
-void countVowelsInStoredWord(const std::vector<std::string>& words) {
-    std::size_t selectedIndex = 0;
-    if (!chooseStoredWordIndex(words, selectedIndex)) {
+// Lets the user type a new word directly, matching the reverse-word feature.
+void countVowelsInWord() {
+    std::string word;
+    std::cout << "Enter a word to count vowels in: ";
+    std::getline(std::cin, word);
+
+    if (word.empty()) {
+        std::cout << "No word entered.\n";
         return;
     }
 
-    std::cout << "Word: " << words[selectedIndex] << '\n';
-    std::cout << "Vowel count: " << countVowels(words[selectedIndex]) << '\n';
+    std::cout << "Vowel count: " << countVowels(word) << '\n';
 }
 
 // Recursively calculates n! with base cases for 0! and 1!.
@@ -292,10 +272,10 @@ int main() {
                 sortAndDisplayWords(words);
                 break;
             case 4:
-                reverseStoredWord(words);
+                reverseWord();
                 break;
             case 5:
-                countVowelsInStoredWord(words);
+                countVowelsInWord();
                 break;
             case 6:
                 calculateFactorial();
